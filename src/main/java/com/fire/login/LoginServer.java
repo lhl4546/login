@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fire.login.http.HttpServer;
 import com.fire.login.http.HttpServerDispatcher;
+import com.fire.login.manager.GateServerManager;
 
 /**
  * @author lhl
@@ -32,6 +33,7 @@ public class LoginServer implements Component
     @Override
     public void start() {
         try {
+            GateServerManager.INSTANCE.start();
             dispatcher.start();
             httpServer.start();
             addShutdownHook();
@@ -55,6 +57,7 @@ public class LoginServer implements Component
         try {
             httpServer.stop();
             dispatcher.stop();
+            GateServerManager.INSTANCE.stop();
             LOG.debug("Login server stop");
         } catch (Exception e) {
             LOG.error("Login server stop failed", e);

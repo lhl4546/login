@@ -9,7 +9,7 @@ import java.util.Map;
 import io.netty.channel.Channel;
 
 /**
- * 发送应答是子类的责任
+ * GET/POST请求处理器。发送应答是子类的责任
  * 
  * @author lhl
  *
