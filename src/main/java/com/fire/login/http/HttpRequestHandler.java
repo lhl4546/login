@@ -24,7 +24,7 @@ public @interface HttpRequestHandler {
      * 
      * @return
      */
-    String uri();
+    String path();
 
     /**
      * false表示该处理器处于停用状态，默认为true

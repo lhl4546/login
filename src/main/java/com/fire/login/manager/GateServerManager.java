@@ -92,7 +92,7 @@ public class GateServerManager implements Component
             String ipPortPair = ipPortPairs[i];
             String[] temp = ipPortPair.split(":");
             array[i] = new GateServer(temp[0], temp[1]);
-            LOG.debug("Gate server found, ip: {}, port: {}", temp[0], temp[1]);
+            LOG.debug("Gate server found, {}", ipPortPair);
         }
         this.gateServer = array;
     }

@@ -1,6 +1,6 @@
 package com.fire.login.http;
 
-import static com.fire.login.http.HttpInboundHandler.KEY_URI;
+import static com.fire.login.http.HttpInboundHandler.KEY_PATH;
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
 
@@ -42,7 +42,7 @@ public class HttpServerDispatcher implements Component, HttpHandler
 
     @Override
     public void handle(Channel channel, Map<String, List<String>> parameter) {
-        String uri = channel.attr(KEY_URI).get();
+        String uri = channel.attr(KEY_PATH).get();
         HttpHandler handler = handlerMap.get(uri);
         if (handler == null) {
             LOG.warn("No handler found for uri {}, session will be close", uri);
@@ -50,6 +50,7 @@ public class HttpServerDispatcher implements Component, HttpHandler
             return;
         }
 
+        LOG.debug("Request ip: {}, uri: {}, parameter: {}", channel.remoteAddress(), uri, parameter);
         handler.handle(channel, parameter);
     }
 
@@ -93,8 +94,8 @@ public class HttpServerDispatcher implements Component, HttpHandler
                 for (Class<?> handler : classList) {
                     HttpRequestHandler annotation = handler.getAnnotation(HttpRequestHandler.class);
                     if (annotation != null && annotation.isEnabled()) {
-                        String uri = annotation.uri();
-                        addHandler(uri, (HttpHandler) handler.newInstance());
+                        String path = annotation.path();
+                        addHandler(path, (HttpHandler) handler.newInstance());
                     }
                 }
             }

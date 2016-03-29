@@ -50,7 +50,7 @@ import io.netty.util.AttributeKey;
 public class HttpInboundHandler extends ChannelInboundHandlerAdapter
 {
     private static final Logger LOG = LoggerFactory.getLogger(HttpInboundHandler.class);
-    public static final AttributeKey<String> KEY_URI = AttributeKey.valueOf("KEY_URI");
+    public static final AttributeKey<String> KEY_PATH = AttributeKey.valueOf("KEY_PATH");
     private static final HttpDataFactory factory = new DefaultHttpDataFactory(false);
     private HttpPostRequestDecoder decoder;
     private HttpServerDispatcher dispatcher;
@@ -63,7 +63,8 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof HttpRequest) {
             HttpRequest req = (HttpRequest) msg;
-            ctx.channel().attr(KEY_URI).set(req.getUri());
+            URI uri = URI.create(req.getUri());
+            ctx.channel().attr(KEY_PATH).set(uri.getPath());
 
             if (req.getMethod().equals(HttpMethod.GET)) {
                 QueryStringDecoder decoder = new QueryStringDecoder(URI.create(req.getUri()));

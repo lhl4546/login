@@ -17,7 +17,7 @@ import io.netty.channel.Channel;
  *
  *         2016年3月29日 下午2:14:39
  */
-@HttpRequestHandler(uri = "/login.verify")
+@HttpRequestHandler(path = "/login.verify")
 public class VerifiyTokenHandler extends StringResponseHttpHandler
 {
     @Override

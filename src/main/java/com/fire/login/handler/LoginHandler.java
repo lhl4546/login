@@ -20,7 +20,7 @@ import io.netty.channel.Channel;
  *
  *         2016年3月29日 下午1:50:23
  */
-@HttpRequestHandler(uri = "/login.auth")
+@HttpRequestHandler(path = "/login.auth")
 public class LoginHandler extends StringResponseHttpHandler
 {
     @Override
