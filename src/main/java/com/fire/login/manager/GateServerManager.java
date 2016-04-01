@@ -26,8 +26,8 @@ public class GateServerManager implements Component
     private static final Logger LOG = LoggerFactory.getLogger(GateServerManager.class);
     private GateServer[] gateServer;
     private AtomicInteger counter;
-    // <account, gate>
-    private ConcurrentMap<String, GateServer> accountToGate;
+    // <uid, gate>
+    private ConcurrentMap<Integer, GateServer> accountToGate;
 
     public static final GateServerManager INSTANCE = new GateServerManager();
 
@@ -42,8 +42,8 @@ public class GateServerManager implements Component
      * @param account
      * @return
      */
-    public static GateServer getGateServer(String account) {
-        return INSTANCE.doGet(account);
+    public static GateServer getGateServer(int uid) {
+        return INSTANCE.doGet(uid);
     }
 
     /**
@@ -52,31 +52,33 @@ public class GateServerManager implements Component
      * @param account
      * @return
      */
-    private GateServer doGet(String account) {
-        GateServer gate = accountToGate.get(account);
+    private GateServer doGet(int uid) {
+        GateServer gate = accountToGate.get(uid);
         if (gate == null) {
+            // TODO 网关选择策略
             gate = gateServer[Math.abs(counter.getAndIncrement() % gateServer.length)];
-            gate = accountToGate.putIfAbsent(account, gate);
+            // gate = gateServer[uid % gateServer.length];
+            gate = accountToGate.putIfAbsent(uid, gate);
         }
         return gate;
     }
 
     /**
-     * 删除帐号{@code account}与网关服务器对应关系
+     * 删除用户与网关服务器对应关系
      * 
-     * @param account
+     * @param uid
      */
-    public static void removeGateServer(String account) {
-        INSTANCE.doRemove(account);
+    public static void removeGateServer(int uid) {
+        INSTANCE.doRemove(uid);
     }
 
     /**
      * 删除本地缓存记录
      * 
-     * @param account
+     * @param uid
      */
-    private void doRemove(String account) {
-        accountToGate.remove(account);
+    private void doRemove(int uid) {
+        accountToGate.remove(uid);
     }
 
     @Override
