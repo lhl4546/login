@@ -16,6 +16,9 @@ import com.fire.login.util.BaseUtil;
 
 /**
  * 网关服务器管理类
+ * <p>
+ * 登录服务器无需确保同一账户同时在2地登录分配同一个网关。只需往先登录的网关1发送下线指令即可，网关1在收到下线指令前的所有操作都视为生效，
+ * 登录服务器收到网关1的下线确认消息后即可分配网关2给用户。需要保证的是同一账户同时只能对应一个逻辑服务器。
  * 
  * @author lhl
  *
@@ -27,13 +30,13 @@ public class GateServerManager implements Component
     private GateServer[] gateServer;
     private AtomicInteger counter;
     // <uid, gate>
-    private ConcurrentMap<Integer, GateServer> accountToGate;
+    private ConcurrentMap<Integer, GateServer> userToGate;
 
     public static final GateServerManager INSTANCE = new GateServerManager();
 
     private GateServerManager() {
         counter = new AtomicInteger();
-        accountToGate = new ConcurrentHashMap<>();
+        userToGate = new ConcurrentHashMap<>();
     }
 
     /**
@@ -53,12 +56,12 @@ public class GateServerManager implements Component
      * @return
      */
     private GateServer doGet(int uid) {
-        GateServer gate = accountToGate.get(uid);
+        GateServer gate = userToGate.get(uid);
         if (gate == null) {
             // TODO 网关选择策略
             gate = gateServer[Math.abs(counter.getAndIncrement() % gateServer.length)];
             // gate = gateServer[uid % gateServer.length];
-            gate = accountToGate.putIfAbsent(uid, gate);
+            gate = userToGate.putIfAbsent(uid, gate);
         }
         return gate;
     }
@@ -78,7 +81,7 @@ public class GateServerManager implements Component
      * @param uid
      */
     private void doRemove(int uid) {
-        accountToGate.remove(uid);
+        userToGate.remove(uid);
     }
 
     @Override
